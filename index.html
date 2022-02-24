@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Non-mercator projection Hessen Schummering</title>
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+    crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+    crossorigin=""></script>
+
+<script src="proj4.js"></script>
+<script src="proj4leaflet.js"></script>
+
+  <style>
+    body { margin:0; padding:0; }
+    #map { position: absolute; top:0; bottom:0; right:0; left:0; }
+  </style>
+</head>
+
+<body>
+
+
+<div id="map"></div>
+
+<script>
+  /* create new Proj4Leaflet CRS:
+  1. Proj4 and WKT definitions can be found at sites like https://epsg.io, https://spatialreference.org/ or by using gdalsrsinfo https://www.gdal.org/gdalsrsinfo.html
+  2. Appropriate values to supply to the resolution and origin constructor options can be found in the ArcGIS Server tile server REST endpoint (ex: https://tiles.arcgis.com/tiles/qHLhLQrcvEnxjtPr/arcgis/rest/services/OS_Open_Background_2/MapServer).
+  3. The numeric code within the first parameter (ex: `27700`) will be used to project the dynamic map layer on the fly
+  */
+  
+ /*
+https://geologie.hessen.de/arcgis/rest/services/geobasis/dgm1_schummerung/MapServer
+
+Initial Extent
+
+XMin: 389514.39704093465
+YMin: 5466303.644493782
+XMax: 620285.3527497455
+YMax: 5716940.105715546
+
+Full Extent
+
+XMin: 412133.9840000002
+YMin: 5471408.535
+XMax: 586408.6459999997
+YMax: 5723092.335000001
+Spatial Reference: 25832  (25832)
+
+*/
+
+// taken from http://epsg.io/25832.proj4
+ 
+var crs = new L.Proj.CRS("EPSG:25833","+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",{
+	resolutions: [
+		661.4596562526459,595.3136906273813,529.1677250021168,463.0217593768521,396.87579375158754,
+		330.72982812632296,264.5838625010584,198.43789687579377,132.2919312505292,66.1459656252646,
+		52.91677250021167,39.687579375158755,26.458386250105836,19.843789687579378,15.875031750063501,
+		13.229193125052918,9.260435187537043,6.614596562526459,5.291677250021167,3.9687579375158752,
+		2.6458386250105836,2.381254762509525,1.9843789687579376,1.3229193125052918,0.7937515875031751,
+		0.6614596562526459,0.26458386250105836,0.13229193125052918
+    ],
+//    origin: [-5120900.0,9998100.0]
+    origin: [412133.9840000002,5471408.535]
+});
+
+var osm = L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+	attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+	opacity: 0.5,
+	minZoom: 0,
+	maxZoom: 20,
+	attribution: 'Map data © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'
+});
+	    		
+var map = L.map('map', {
+	// crs: crs,
+	center: [50.0,10.0],
+	zoom: 7,
+	minZoom: 0,
+	maxZoom: 20
+});
+		
+
+L.tileLayer('https://geologie.hessen.de/arcgis/rest/services/geobasis/dgm1_schummerung/MapServer/tile/{z}/{x}/{y}', {
+  crs: crs,
+  maxZoom: 20, // crs.options.resolutions.length,
+  minZoom: 0,
+  attribution: 'Map data Datengrundlage: Hessische Verwaltung für Bodenmanagement und Geoinformation / Datenaufbereitung und -bereitstellung: Hessisches Landesamt für Naturschutz, Umwelt und Geologie'
+}).addTo(map);
+
+osm.addTo(map);
+	
+
+</script>
+
+</body>
+</html>
