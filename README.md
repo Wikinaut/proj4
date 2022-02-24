@@ -1,4 +1,4 @@
-https://wikinaut.github.io/proj4/https://wikinaut.github.io/proj4/
+https://wikinaut.github.io/proj4/
 
 
 # proj4
